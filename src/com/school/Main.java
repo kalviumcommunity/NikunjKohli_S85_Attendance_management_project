@@ -1,23 +1,28 @@
 package com.school;
 
+import java.util.Scanner;
+
 public class Main {
-    static boolean isPrime(int n) {
-        if (n <= 1) return false;
-        for (int i = 2; i * i <= n; i++) {
-            if (n % i == 0) return false;
-        }
-        return true;
-    }
-
     public static void main(String[] args) {
-        int start = 10;
-        int end = 30;
+        Scanner in = new Scanner(System.in);
+        int n = in.nextInt();
+        Student [] s = new Student[n];
+        Course [] c = new Course[n];
 
-        System.out.println("Prime numbers between " + start + " and " + end + ":");
-        for (int i = start; i <= end; i++) {
-            if (isPrime(i)) {
-                System.out.print(i + " ");
-            }
+        for (int i = 0; i < n; i++) {
+            String name = in.next();
+            int id = in.nextInt();
+            String Cname = in.next();
+            int cid = in.nextInt();
+            s[i] = new Student();
+            c[i] = new Course();
+            c[i].setcd(cid, Cname);
+            s[i].setdetails(id, name);
+        }
+
+        for (int i = 0; i < n; i++) {
+            s[i].display();
+            c[i].display();
         }
     }
 }
