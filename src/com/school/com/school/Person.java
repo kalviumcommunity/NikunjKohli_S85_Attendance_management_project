@@ -21,6 +21,5 @@ public class Person {
 
     public void displayDetails() {
         System.out.print("ID: " + id + ", Name: " + name);
-        // Subclasses will add more details
     }
 }
