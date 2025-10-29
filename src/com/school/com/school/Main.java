@@ -1,13 +1,12 @@
 package com.school;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
 
-    // ✅ Helper method to display any school directory
-    public static void displaySchoolDirectory(List<Person> people) {
+    public static void displaySchoolDirectory(RegistrationService regService) {
         System.out.println("\n--- School Directory ---");
+        List<Person> people = regService.getAllPeople();
         if (people.isEmpty()) {
             System.out.println("No people in the directory.");
             return;
@@ -18,52 +17,60 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.out.println("--- School Administration & Attendance System ---");
+        System.out.println("--- School Administration & Attendance System (Polymorphism Demo) ---");
 
-        // --- Setup: People ---
-        Student student1 = new Student("Alice Wonderland", "Grade 10");
-        Student student2 = new Student("Bob The Builder", "Grade 9");
-        Teacher teacher1 = new Teacher("Dr. Emily Carter", "Physics");
-        Staff staff1   = new Staff("Mr. John Davis", "Librarian");
+        // Create services
+        FileStorageService storageService = new FileStorageService();
+        RegistrationService registrationService = new RegistrationService(storageService);
+        AttendanceService attendanceService = new AttendanceService(storageService, registrationService);
 
-        List<Person> schoolPeople = new ArrayList<>();
-        schoolPeople.add(student1);
-        schoolPeople.add(student2);
-        schoolPeople.add(teacher1);
-        schoolPeople.add(staff1);
+        // Register students, teachers, staff, and courses
+        registrationService.registerStudent("Alice Wonderland", "Grade 10");
+        registrationService.registerStudent("Bob The Builder", "Grade 9");
+        registrationService.registerTeacher("Dr. Emily Carter", "Physics");
+        registrationService.registerStaff("Mr. John Davis", "Librarian");
 
-        displaySchoolDirectory(schoolPeople);
+        // Display school directory using RegistrationService
+        displaySchoolDirectory(registrationService);
 
-        // --- Setup: Courses ---
-        Course course1 = new Course("Intro to Quantum Physics");  // ID auto: C101
-        Course course2 = new Course("Advanced Algorithms");       // ID auto: C102
-        List<Course> courses = new ArrayList<>();
-        courses.add(course1);
-        courses.add(course2);
+        // Create courses
+        registrationService.createCourse("Intro to Quantum Physics");
+        registrationService.createCourse("Advanced Algorithms");
 
-        System.out.println("\n--- Available Courses ---");
-        for (Course c : courses) {
+        System.out.println("\n\n--- Available Courses ---");
+        for (Course c : registrationService.getCourses()) {
             c.displayDetails();
         }
 
-        // --- Attendance Records ---
-        List<AttendanceRecord> attendanceLog = new ArrayList<>();
-        attendanceLog.add(new AttendanceRecord(student1, course1, "Present"));
-        attendanceLog.add(new AttendanceRecord(student2, course1, "Absent"));
-        attendanceLog.add(new AttendanceRecord(student1, course2, "Daydreaming")); // invalid status
+        // Get students and courses for attendance marking
+        List<Student> students = registrationService.getStudents();
+        List<Course> courses = registrationService.getCourses();
 
-        System.out.println("\n--- Attendance Log ---");
-        for (AttendanceRecord ar : attendanceLog) {
-            ar.displayRecord();
+        // Mark attendance using object-based method
+        if (students.size() >= 2 && courses.size() >= 1) {
+            attendanceService.markAttendance(students.get(0), courses.get(0), "Present");
+            attendanceService.markAttendance(students.get(1), courses.get(0), "Absent");
         }
 
-        // --- Saving Data ---
-        System.out.println("\n--- Saving Data ---");
-        FileStorageService storageService = new FileStorageService();
-        storageService.saveData(List.of(student1, student2), "students.txt");
-        storageService.saveData(courses, "courses.txt");
-        storageService.saveData(attendanceLog, "attendance_log.txt");
+        // Mark attendance using ID-based method
+        if (students.size() >= 1 && courses.size() >= 2) {
+            attendanceService.markAttendance(students.get(0).getId(), courses.get(1).getCourseId(), "Daydreaming");
+        }
 
-        System.out.println("\nSession Complete.");
+        // Display attendance logs
+        attendanceService.displayAttendanceLog();
+        if (students.size() >= 1) {
+            attendanceService.displayAttendanceLog(students.get(0));
+        }
+        if (courses.size() >= 1) {
+            attendanceService.displayAttendanceLog(courses.get(0));
+        }
+
+        // Save all data
+        System.out.println("\n\n--- Saving Data to Files ---");
+        registrationService.saveAllRegistrations();
+        attendanceService.saveAttendanceData();
+
+        System.out.println("\nSession Complete: All data saved successfully.");
     }
 }
