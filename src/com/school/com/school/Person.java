@@ -1,8 +1,9 @@
-package com.school;
+package com.School;
 
 public class Person {
-    private static int nextIdCounter = 1;
-    protected int id;
+    private static int nextIdCounter = 1; // Universal ID counter
+
+    protected int id; // Changed to protected for derived class access if needed, or keep private and use super()
     protected String name;
 
     public Person(String name) {
@@ -10,10 +11,16 @@ public class Person {
         this.name = name;
     }
 
-    public int getId() { return id; }
-    public String getName() { return name; }
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     public void displayDetails() {
         System.out.print("ID: " + id + ", Name: " + name);
+        // Subclasses will add more details
     }
 }
