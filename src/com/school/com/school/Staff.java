@@ -1,21 +1,26 @@
-package com.school;
+package com.School;
 
-public class Staff extends Person implements Storable {
-    private String role;
+public class Person {
+    private static int nextIdCounter = 1; // Universal ID counter
 
-    public Staff(String name, String role) {
-        super(name);
-        this.role = role;
+    protected int id; // Changed to protected for derived class access if needed, or keep private and use super()
+    protected String name;
+
+    public Person(String name) {
+        this.id = nextIdCounter++;
+        this.name = name;
     }
 
-    @Override
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public void displayDetails() {
-        super.displayDetails();
-        System.out.println("Staff Role: " + this.role + ", Role: Staff");
-    }
-
-    @Override
-    public String toDataString() {
-        return id + "," + name + "," + role;
+        System.out.print("ID: " + id + ", Name: " + name);
+        // Subclasses will add more details
     }
 }
